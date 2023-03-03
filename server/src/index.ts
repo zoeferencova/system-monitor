@@ -10,6 +10,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import si from 'systeminformation';
+import * as dotenv from 'dotenv';
 import { v1 as uuidv1 } from 'uuid';
 
 const typeDefs = `#graphql
@@ -46,7 +47,7 @@ const typeDefs = `#graphql
 `;
 
 const getUpdatedData = async function () {
-    return await Promise.all([
+    const data = await Promise.all([
         si.system(),
         si.currentLoad(),
         si.mem(),
@@ -69,26 +70,28 @@ const getUpdatedData = async function () {
             processes: results[4].list.slice(0, 5).map(process => ({ name: process.name, cpu: process.cpu, mem: process.mem, started: process.started }))
         }
     })
+    // Function to write data to DB
+    return data;
 }
 
-const pubsub = new PubSub();
+// const pubsub = new PubSub();
 
-const updateData = () => {
-    const updatedData = getUpdatedData().then(data => data)
-    // Write data to DB
-    pubsub.publish('DATA_UPDATED', { systemData: updatedData });
-    setTimeout(updateData, 5000);
-}
+// const updateData = () => {
+//     const updatedData = getUpdatedData().then(data => data)
+//     pubsub.publish('DATA_UPDATED', { systemData: updatedData });
+//     // Write data to DB
+//     setTimeout(updateData, 5000);
+// }
 
 const resolvers = {
     Query: {
         systemData: () => getUpdatedData().then(data => data)
     },
-    Subscription: {
-        systemData: {
-            subscribe: () => pubsub.asyncIterator(['DATA_UPDATED'])
-        },
-    },
+    // Subscription: {
+    //     systemData: {
+    //         subscribe: () => pubsub.asyncIterator(['DATA_UPDATED'])
+    //     },
+    // },
 };
 
 
@@ -98,26 +101,17 @@ const schema = makeExecutableSchema({ typeDefs, resolvers });
 const app = express();
 const httpServer = createServer(app);
 
-// Creating the WebSocket server
 const wsServer = new WebSocketServer({
-    // This is the `httpServer` we created in a previous step.
     server: httpServer,
-    // Pass a different path here if app.use
-    // serves expressMiddleware at a different path
     path: '/graphql',
 });
 
-// Hand in the schema we just created and have the
-// WebSocketServer start listening.
 const serverCleanup = useServer({ schema }, wsServer);
 
 const server = new ApolloServer({
     schema,
     plugins: [
-        // Proper shutdown for the HTTP server.
         ApolloServerPluginDrainHttpServer({ httpServer }),
-
-        // Proper shutdown for the WebSocket server.
         {
             async serverWillStart() {
                 return {
@@ -140,6 +134,3 @@ httpServer.listen(PORT, () => {
 });
 
 // updateData()
-
-
-
