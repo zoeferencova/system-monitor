@@ -5,15 +5,15 @@ import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
 import { createClient } from 'graphql-ws';
 import { split, HttpLink } from '@apollo/client';
 import { getMainDefinition } from '@apollo/client/utilities';
-import App from './App';
-import './index.css';
+import App from './App/App';
+import './styles/index.scss';
 
 const httpLink = new HttpLink({
-  uri: 'https://system-monitor.onrender.com/graphql'
+  uri: 'http://localhost:4000/graphql'
 });
 
 const wsLink = new GraphQLWsLink(createClient({
-  url: 'ws://system-monitor.onrender.com/graphql',
+  url: 'ws://localhost:4000/graphql',
   options: {
     reconnect: true
   }

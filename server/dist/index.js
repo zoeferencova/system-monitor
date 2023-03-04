@@ -5,7 +5,6 @@ import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHt
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { WebSocketServer } from 'ws';
 import { useServer } from 'graphql-ws/lib/use/ws';
-import { PubSub } from 'graphql-subscriptions';
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
@@ -43,8 +42,9 @@ const typeDefs = `#graphql
     systemData: SystemData
   }
 `;
+// let currentData;
 const getUpdatedData = async function () {
-    const data = await Promise.all([
+    return await Promise.all([
         si.system(),
         si.currentLoad(),
         si.mem(),
@@ -67,25 +67,28 @@ const getUpdatedData = async function () {
             processes: results[4].list.slice(0, 5).map(process => ({ name: process.name, cpu: process.cpu, mem: process.mem, started: process.started }))
         };
     });
-    console.log(data);
-    return data;
 };
-const pubsub = new PubSub();
-const updateData = () => {
-    const updatedData = getUpdatedData().then(data => data);
-    pubsub.publish('DATA_UPDATED', { systemData: updatedData });
-    // Write data to DB
-    setTimeout(updateData, 5000);
-};
+// const updateData = () => {
+//     getUpdatedData()
+//     setTimeout(updateData, 1000)
+// }
+// updateData()
+// const pubsub = new PubSub();
+// const updateData = () => {
+//     const updatedData = getUpdatedData().then(data => data)
+//     pubsub.publish('DATA_UPDATED', { systemData: updatedData });
+//     // Write data to DB
+//     setTimeout(updateData, 5000);
+// }
 const resolvers = {
     Query: {
         systemData: () => getUpdatedData().then(data => data)
     },
-    Subscription: {
-        systemData: {
-            subscribe: () => pubsub.asyncIterator(['DATA_UPDATED'])
-        },
-    },
+    // Subscription: {
+    //     systemData: {
+    //         subscribe: () => pubsub.asyncIterator(['DATA_UPDATED'])
+    //     },
+    // },
 };
 const schema = makeExecutableSchema({ typeDefs, resolvers });
 const app = express();

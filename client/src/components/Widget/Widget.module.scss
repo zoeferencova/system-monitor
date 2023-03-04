@@ -1,0 +1,19 @@
+@use '../../styles/vars.scss' as var;
+
+@mixin categoryIcon($filename) {
+    &::before {
+        content: url($filename)
+    }
+}
+
+.h1 {
+    color: var.$dark-text;
+}
+
+
+.categoryLabel {
+    img {
+        height: 14px;
+        width: 14px;
+    }
+}

@@ -46,8 +46,9 @@ const typeDefs = `#graphql
   }
 `;
 
+// let currentData;
 const getUpdatedData = async function () {
-    const data = await Promise.all([
+    return await Promise.all([
         si.system(),
         si.currentLoad(),
         si.mem(),
@@ -70,10 +71,14 @@ const getUpdatedData = async function () {
             processes: results[4].list.slice(0, 5).map(process => ({ name: process.name, cpu: process.cpu, mem: process.mem, started: process.started }))
         }
     })
-    // Function to write data to DB
-    return data;
 }
 
+// const updateData = () => {
+//     getUpdatedData()
+//     setTimeout(updateData, 1000)
+// }
+
+// updateData()
 // const pubsub = new PubSub();
 
 // const updateData = () => {
