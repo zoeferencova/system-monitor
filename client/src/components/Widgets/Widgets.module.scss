@@ -1,0 +1,7 @@
+@use '../../styles/vars.scss' as var;
+
+.widgets {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}

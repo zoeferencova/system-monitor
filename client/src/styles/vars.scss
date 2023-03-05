@@ -1,12 +1,32 @@
 $light-text: #7D8292;
-$dark-text: #353946;
-$background: #F7F8FA;
-$divider: #E2E8EA;
-$widget-bar-full: #A8A1D5;
-$widget-bar-empty: #EDEAF9;
+$dark-text: #000000;
 
 $base: 0.9rem;
 $small: 0.5rem;
-$page-heading: 1.9rem;
-$section-heading: 1.2rem;
-$subheading: 0.9rem;
+
+$divider: 1px solid #E2E8EA;
+
+@mixin page-heading {
+    color: $dark-text;
+    font-size: 1.35rem;
+    line-height: 2rem;
+    font-weight: 500;
+}
+
+@mixin section-heading {
+    color: $dark-text;
+    font-size: 1.1rem;
+    line-height: 1.8rem;
+}
+
+@mixin subheading {
+    color: $light-text;
+    font-size: 0.98rem;
+    line-height: 1.8rem;
+}
+
+@mixin widget-box {
+    background-color: white;
+    padding: 20px 25px;
+    border-radius: 10px;
+}

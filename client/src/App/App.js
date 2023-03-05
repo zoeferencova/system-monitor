@@ -1,8 +1,10 @@
-import './App.scss';
 import React, { useState } from 'react';
 import { useQuery, gql } from '@apollo/client';
 import Chart from '../components/Chart/Chart';
 import Widgets from '../components/Widgets/Widgets';
+import Header from '../components/Header/Header';
+
+import styles from './App.module.scss';
 
 const GET_DATA = gql`
   query SystemData {
@@ -46,9 +48,12 @@ function App() {
   if (error) console.log(error)
 
   return (
-    <div>
-      <Widgets currentPoint={points[points.length - 1]} />
-      <Chart points={points} />
+    <div className={styles.app} >
+      <div className={styles.container}>
+        <Header />
+        <Widgets currentPoint={points[points.length - 1]} />
+        {/* <Chart points={points} /> */}
+      </div>
     </div>
 
   );

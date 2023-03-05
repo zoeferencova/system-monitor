@@ -1,0 +1,13 @@
+@use '../../styles/vars.scss' as var;
+
+.header {
+    padding-bottom: 40px;
+}
+
+.h1 {
+    @include var.page-heading;
+}
+
+.subheading {
+    @include var.subheading;
+}
