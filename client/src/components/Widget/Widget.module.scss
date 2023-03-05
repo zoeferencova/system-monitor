@@ -28,9 +28,64 @@
 .stats {
     display: flex;
     justify-content: space-between;
+    align-items: center;
 }
 
 .primaryStat {
     font-size: 1.5rem;
     font-weight: 500;
+}
+
+.secondaryStats {
+    margin-top: 5px;
+
+    div {
+        display: flex;
+        justify-content: space-between;
+
+        :first-of-type {
+            margin-bottom: 6px;
+        }
+    }
+
+    span {
+
+        font-size: var.$small;
+
+    }
+
+    .label {
+        color: var.$light-text;
+        margin-right: 15px;
+    }
+
+    .value {
+        font-weight: 600;
+    }
+}
+
+.primaryStatBar {
+    width: 110px;
+    background-color: #E9E9E9;
+    height: 7px;
+    border-radius: 50px;
+    margin-bottom: 5px;
+
+    .inner {
+        background-color: #404040;
+        height: 100%;
+        border-radius: inherit;
+    }
+}
+
+.bolt {
+    height: 11px;
+    display: inline-block;
+    margin-bottom: 0px !important;
+    margin-right: 5px;
+}
+
+.charging {
+    display: flex;
+    align-items: center;
 }

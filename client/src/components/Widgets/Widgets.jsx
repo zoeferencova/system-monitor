@@ -20,11 +20,15 @@ function Widgets({ currentPoint }) {
         return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
     }
 
+    const formatPercentage = (percentage, decimals = 1) => {
+        return percentage.toFixed(decimals) + '%'
+    }
+
     return (
         <div className={styles.widgets}>
-            <Widget primaryStat={cpuTotal.toFixed(1) + '%'} secondaryStats={{ System: cpuSys.toFixed(1) + '%', User: cpuUser.toFixed(1) + '%' }} category="CPU" />
-            <Widget primaryStat={memTotal.toFixed(1) + '%'} secondaryStats={{ Usage: formatBytes(memUsed), Free: formatBytes(memFree) }} category="Memory" />
-            <Widget primaryStat={battPercent + '%'} secondaryStats={{ 'Time left': battRemaining + ' mins', Cycles: battCycles }} charging={battCharging} category="Battery" />
+            <Widget primaryStat={formatPercentage(cpuTotal)} secondaryStats={{ System: formatPercentage(cpuSys), User: formatPercentage(cpuUser) }} category="CPU" />
+            <Widget primaryStat={formatPercentage(memTotal)} secondaryStats={{ Usage: formatBytes(memUsed), Free: formatBytes(memFree) }} category="Memory" />
+            <Widget primaryStat={formatPercentage(battPercent, 0)} secondaryStats={{ 'Time left': battRemaining + ' mins', Cycles: battCycles }} charging={battCharging} category="Battery" />
         </div>
     );
 }
