@@ -1,0 +1,10 @@
+@use '../../styles/vars.scss' as var;
+
+.section {
+    margin-top: 60px;
+}
+
+.table {
+    @include var.widget-box;
+    padding: 20px 0px;
+}

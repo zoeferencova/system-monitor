@@ -1,0 +1,13 @@
+@use '../../styles/vars.scss' as var;
+
+.container {
+    margin-bottom: 20px;
+}
+
+.heading {
+    @include var.section-heading;
+}
+
+.subheading {
+    @include var.subheading;
+}

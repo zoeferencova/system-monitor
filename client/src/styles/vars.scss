@@ -15,7 +15,8 @@ $divider: 1px solid #E2E8EA;
 
 @mixin section-heading {
     color: $dark-text;
-    font-size: 1.1rem;
+    font-size: 1.15rem;
+    font-weight: 500;
     line-height: 1.8rem;
 }
 
@@ -27,6 +28,5 @@ $divider: 1px solid #E2E8EA;
 
 @mixin widget-box {
     background-color: white;
-    padding: 20px 25px;
     border-radius: 10px;
 }

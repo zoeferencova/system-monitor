@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useQuery, gql } from '@apollo/client';
-import Chart from '../components/Chart/Chart';
-import Widgets from '../components/Widgets/Widgets';
 import Header from '../components/Header/Header';
+import Widgets from '../components/Widgets/Widgets';
+import Chart from '../components/Chart/Chart';
+import ProcessTable from '../components/ProcessTable/ProcessTable';
 
 import styles from './App.module.scss';
 
@@ -53,6 +54,7 @@ function App() {
         <Header />
         <Widgets currentPoint={points[points.length - 1]} />
         {/* <Chart points={points} /> */}
+        <ProcessTable processes={points[points.length - 1].processes} />
       </div>
     </div>
 
