@@ -36,12 +36,12 @@ function App() {
   const [points, updatePoints] = useState([])
 
   const addPoint = data => {
-    if (points.length > 720) points.shift()
+    if (points.length >= 300) points.shift()
     updatePoints([...points, data.systemData])
   }
 
   const { loading, error, data } = useQuery(GET_DATA, {
-    pollInterval: 3000,
+    pollInterval: 1000,
     onCompleted: data => addPoint(data)
   })
 
@@ -53,7 +53,7 @@ function App() {
       <div className={styles.container}>
         <Header />
         <Widgets currentPoint={points[points.length - 1]} />
-        {/* <Chart points={points} /> */}
+        <Chart data={points} />
         <ProcessTable processes={points[points.length - 1].processes} />
       </div>
     </div>

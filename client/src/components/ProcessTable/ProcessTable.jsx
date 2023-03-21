@@ -7,7 +7,6 @@ function ProcessTable({ processes }) {
 
     const formatTime = timeStarted => {
         const timeBetween = Date.now() - new Date(timeStarted)
-        console.log(timeBetween)
         return new Date(timeBetween).toTimeString().split(' ')[0]
     }
 
@@ -18,7 +17,7 @@ function ProcessTable({ processes }) {
                 <table>
                     <thead>
                         <tr>
-                            <td>Name</td>
+                            <td>Process</td>
                             <td>% CPU</td>
                             <td>% Memory</td>
                             <td>CPU Time</td>

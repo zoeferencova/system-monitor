@@ -6,5 +6,44 @@
 
 .table {
     @include var.widget-box;
-    padding: 20px 0px;
+    padding: 13px 0px;
+    width: 100%;
+    border-collapse: collapse;
+
+    table {
+        width: 100%;
+    }
+
+    thead tr,
+    tbody tr {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 2fr repeat(3, 1fr);
+    }
+
+    td {
+        &:not(:first-child) {
+            text-align: right;
+        }
+    }
+
+    tbody {
+        tr:nth-of-type(1) td {
+            padding-top: 20px;
+        }
+
+        td {
+            padding: 10px 25px;
+        }
+    }
+
+
+    thead {
+        border-bottom: var.$divider;
+
+        td {
+            padding: 7px 25px 17px 25px;
+            color: var.$light-text;
+        }
+    }
 }
