@@ -1,0 +1,6 @@
+@use '../../styles/vars.scss' as var;
+
+.container {
+    @include var.widget-box;
+    margin-top: 40px;
+}

@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react'
-import { select, extent, scaleTime, scaleLinear, axisLeft, axisBottom, timeFormat, timeSecond, line, transition, easeLinear } from 'd3';
+import { useEffect, useRef, useState } from 'react'
+import { select, scaleTime, scaleLinear, axisLeft, axisBottom, timeFormat, timeSecond, line, area, easeLinear, max } from 'd3';
 
 import styles from './Chart.module.scss'
 
@@ -8,7 +8,11 @@ const margin = { top: 80, right: 60, bottom: 80, left: 60 }
 const width = 1000 - margin.left - margin.right
 const height = 400 - margin.top - margin.bottom
 
+const colors = ["#2F58F6", "#6CB477", "#9180FF"];
+
 const Chart = ({ data }) => {
+    const [selectedMetrics, setSelectedMetrics] = useState(['cpuSys', 'cpuUser', 'cpuTotal'])
+
     const d3svg = useRef(null)
 
     // scales
@@ -17,17 +21,14 @@ const Chart = ({ data }) => {
         .domain([timeSecond.offset(new Date(xValue(data[data.length - 1])), -300), new Date(xValue(data[data.length - 1]))])
         .range([0, width])
 
-    const yValue = d => d.cpuTotal
     const yScale = scaleLinear()
+        // .domain([0, max(data.map(d => max(d))) + 10])
         .domain([0, 100])
         .range([height, 0])
 
+
     const xAxis = axisBottom(xScale).ticks(5).tickFormat(timeFormat("%-I:%M%p"))
     const yAxis = axisLeft(yScale).ticks(4)
-
-    var cpuLine = line()
-        .x(d => xScale(xValue(d)))
-        .y(d => yScale(yValue(d)))
 
     const createGraph = () => {
         let svg = select(d3svg.current);
@@ -43,32 +44,52 @@ const Chart = ({ data }) => {
             .classed("y-axis", true)
             .call(yAxis);
 
-        svg.append("path")
-            .datum(data)
-            .attr("class", "line")
-            .attr("fill", "none")
-            .attr("stroke", "black")
-            .attr("stroke-width", 1.5)
-            .attr("d", cpuLine)
+        selectedMetrics.forEach((metric, i) => {
+            svg.append("path")
+                .datum(data)
+                .attr("class", `${metric}-line`)
+                .attr("stroke", colors[i])
+                .attr("fill", "none")
+                .attr("stroke-width", 1.5)
+                .attr("d", line().x(d => xScale(xValue(d))).y(d => yScale(d[metric])))
 
-
+            svg.append("path")
+                .datum(data)
+                .attr("class", `${metric}-area`)
+                .attr("fill", colors[i])
+                .attr("opacity", 0.1)
+                .attr("d", area().x(d => xScale(xValue(d))).y0(height).y1(d => yScale(d[metric])))
+        })
     }
 
     const updateGraph = () => {
-        let line = select('.line')
+        selectedMetrics.forEach((metric, i) => {
+            let metricLine = select(`.${metric}-line`)
+            let metricArea = select(`.${metric}-area`)
 
+            metricLine
+                .datum(data)
+                .attr("d", line().x(d => xScale(xValue(d))).y(d => yScale(d[metric])))
 
-        line
-            .datum(data)
-            .attr("d", cpuLine)
+            metricArea
+                .datum(data)
+                .attr("d", area().x(d => xScale(xValue(d))).y0(height).y1(d => yScale(d[metric])))
+        })
 
         const xAxisGroup = select('.x-axis')
+        const yAxisGroup = select('.y-axis')
 
         xAxisGroup
             .transition()
             .duration(1000)
             .ease(easeLinear)
             .call(xAxis);
+
+        yAxisGroup
+            .transition()
+            .duration(1000)
+            .ease(easeLinear)
+            .call(yAxis);
     }
 
     useEffect(() => {
@@ -77,17 +98,20 @@ const Chart = ({ data }) => {
 
     useEffect(() => {
         updateGraph()
-        console.log(data)
     }, [data])
 
     return (
-        <svg
-            className={styles.container}
-            width={width + margin.left + margin.right}
-            height={height + margin.top + margin.bottom}
-            role="img"
-            ref={d3svg}
-        ></svg>
+        <div className={styles.container}>
+
+            <svg
+                width={width + margin.left + margin.right}
+                height={height + margin.top + margin.bottom}
+                role="img"
+                ref={d3svg}
+            ></svg>
+
+        </div>
+
     )
 }
 
