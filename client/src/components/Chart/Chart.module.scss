@@ -3,4 +3,10 @@
 .container {
     @include var.widget-box;
     margin-top: 40px;
+
+    padding: 30px;
+
+    text {
+        font-size: 13px;
+    }
 }

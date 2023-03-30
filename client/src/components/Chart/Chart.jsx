@@ -1,14 +1,16 @@
 import { useEffect, useRef, useState } from 'react'
 import { select, scaleTime, scaleLinear, axisLeft, axisBottom, timeFormat, timeSecond, line, area, easeLinear, max } from 'd3';
-
+import SectionHeader from '../SectionHeader/SectionHeader';
 import styles from './Chart.module.scss'
 
 // margin convention often used with D3
-const margin = { top: 80, right: 60, bottom: 80, left: 60 }
+const margin = { top: 20, right: 85, bottom: 30, left: 30 }
 const width = 1000 - margin.left - margin.right
-const height = 400 - margin.top - margin.bottom
+const height = 250 - margin.top - margin.bottom
 
-const colors = ["#2F58F6", "#6CB477", "#9180FF"];
+const lineColors = ["#2F58F6", "#6CB477", "#9180FF"];
+const axisColor = "#7D8292"
+const gridColor = "#D9D9D9"
 
 const Chart = ({ data }) => {
     const [selectedMetrics, setSelectedMetrics] = useState(['cpuSys', 'cpuUser', 'cpuTotal'])
@@ -27,8 +29,10 @@ const Chart = ({ data }) => {
         .range([height, 0])
 
 
-    const xAxis = axisBottom(xScale).ticks(5).tickFormat(timeFormat("%-I:%M%p"))
-    const yAxis = axisLeft(yScale).ticks(4)
+    const xAxis = axisBottom(xScale).ticks(5).tickFormat(timeFormat("%-I:%M%p")).tickSizeOuter(0)
+    const yAxis = axisLeft(yScale).tickValues([0, 25, 50, 75, 100])
+
+    const yAxisGrid = axisLeft(yScale).tickSize(-width).tickFormat("").tickValues([0, 25, 50, 75, 100])
 
     const createGraph = () => {
         let svg = select(d3svg.current);
@@ -39,13 +43,27 @@ const Chart = ({ data }) => {
             .attr("height", height)
 
         svg.append("g")
-            .attr("transform", `translate(0, ${height})`)
-            .classed("x-axis", true)
-            .call(xAxis);
+            .classed("y-axis", true)
+            .call(yAxis)
+            .attr("color", axisColor)
+            .selectAll(".tick line")
+            .style('color', 'white')
+            .select(".domain").remove()
+
+        svg.append('g')
+            .classed("y-axis-grid", true)
+            .call(yAxisGrid)
+            .attr("color", gridColor)
+            .select(".domain")
+            .attr("stroke", "white")
 
         svg.append("g")
-            .classed("y-axis", true)
-            .call(yAxis);
+            .attr("transform", `translate(0, ${height})`)
+            .classed("x-axis", true)
+            .call(xAxis)
+            .attr("color", axisColor)
+            .selectAll("text")
+            .attr("dy", "1em")
 
         svg = svg.append("g")
             .attr("width", width)
@@ -62,7 +80,7 @@ const Chart = ({ data }) => {
             svg.append("path")
                 .datum(data)
                 .attr("class", `${metric}-line`)
-                .attr("stroke", colors[i])
+                .attr("stroke", lineColors[i])
                 .attr("fill", "none")
                 .attr("stroke-width", 1.5)
                 .attr("d", line().x(d => xScale(xValue(d))).y(d => yScale(d[metric])))
@@ -70,14 +88,10 @@ const Chart = ({ data }) => {
             svg.append("path")
                 .datum(data)
                 .attr("class", `${metric}-area`)
-                .attr("fill", colors[i])
+                .attr("fill", lineColors[i])
                 .attr("opacity", 0.1)
                 .attr("d", area().x(d => xScale(xValue(d))).y0(height).y1(d => yScale(d[metric])))
         })
-
-
-
-
     }
 
     const updateGraph = () => {
@@ -104,10 +118,7 @@ const Chart = ({ data }) => {
             .call(xAxis);
 
         yAxisGroup
-            .transition()
-            .duration(1000)
-            .ease(easeLinear)
-            .call(yAxis);
+            .call(yAxis)
     }
 
     useEffect(() => {
@@ -120,6 +131,7 @@ const Chart = ({ data }) => {
 
     return (
         <div className={styles.container}>
+            <SectionHeader heading='CPU load' subheading='System CPU load by category' />
             <svg
                 width={width + margin.left + margin.right}
                 height={height + margin.top + margin.bottom}
