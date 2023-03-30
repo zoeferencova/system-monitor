@@ -33,7 +33,10 @@ const Chart = ({ data }) => {
     const createGraph = () => {
         let svg = select(d3svg.current);
 
-        svg = svg.append('g').attr('transform', `translate(${margin.left}, ${margin.top})`)
+        svg = svg.append('g')
+            .attr('transform', `translate(${margin.left}, ${margin.top})`)
+            .attr("width", width)
+            .attr("height", height)
 
         svg.append("g")
             .attr("transform", `translate(0, ${height})`)
@@ -43,6 +46,17 @@ const Chart = ({ data }) => {
         svg.append("g")
             .classed("y-axis", true)
             .call(yAxis);
+
+        svg = svg.append("g")
+            .attr("width", width)
+            .attr("height", height)
+            .attr("clip-path", "url(#clip)")
+
+        svg.append("clipPath")
+            .attr("id", "clip")
+            .append("rect")
+            .attr("width", width)
+            .attr("height", height)
 
         selectedMetrics.forEach((metric, i) => {
             svg.append("path")
@@ -60,6 +74,10 @@ const Chart = ({ data }) => {
                 .attr("opacity", 0.1)
                 .attr("d", area().x(d => xScale(xValue(d))).y0(height).y1(d => yScale(d[metric])))
         })
+
+
+
+
     }
 
     const updateGraph = () => {
@@ -102,14 +120,12 @@ const Chart = ({ data }) => {
 
     return (
         <div className={styles.container}>
-
             <svg
                 width={width + margin.left + margin.right}
                 height={height + margin.top + margin.bottom}
                 role="img"
                 ref={d3svg}
             ></svg>
-
         </div>
 
     )
