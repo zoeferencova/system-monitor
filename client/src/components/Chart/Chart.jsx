@@ -36,7 +36,7 @@ const Chart = ({ data, formatPercentage, formatBytes }) => {
     // scales
     const xValue = d => new Date(d.timestamp);
     const xScale = scaleTime()
-        .domain([timeSecond.offset(new Date(xValue(data[data.length - 1])), -50), new Date(xValue(data[data.length - 1]))])
+        .domain([timeSecond.offset(new Date(xValue(data[data.length - 1])), -300), new Date(xValue(data[data.length - 1]))])
         .range([0, width])
 
     const yScale = scaleLinear()
@@ -176,8 +176,20 @@ const Chart = ({ data, formatPercentage, formatBytes }) => {
         const tooltipLine = select("#tooltip-line")
         const tooltipText = select("#tooltip-text")
 
-        const xPosition = event[0] + 10;
-        const yPosition = event[1] - (tooltipPaddingY + tooltipHeight / 2);
+        const distanceFromEnd = width - event[0];
+        const distanceFromTop = event[1];
+        const distanceFromBottom = height - event[1];
+
+        const xPosition = distanceFromEnd >= tooltipWidth + (tooltipPaddingX * 2) + 10 ? event[0] + 10 : event[0] - tooltipWidth - (tooltipPaddingX * 2) - 10;
+        let yPosition;
+
+        if (distanceFromTop < tooltipHeight / 2 + tooltipPaddingY) {
+            yPosition = event[1]
+        } else if (distanceFromBottom < tooltipHeight / 2 + tooltipPaddingY) {
+            yPosition = event[1] - tooltipHeight - tooltipPaddingY * 2
+        } else {
+            yPosition = event[1] - (tooltipPaddingY + tooltipHeight / 2);
+        }
 
         tooltip.attr("transform", `translate(${xPosition}, ${yPosition})`)
         tooltipLine.attr("x1", event[0]).attr("x2", event[0])
@@ -224,6 +236,9 @@ const Chart = ({ data, formatPercentage, formatBytes }) => {
                     .text(`${obj.label}: ${formatPercentage(obj.value)}`)
                     .attr('color', 'black')
             })
+
+            tooltip
+                .style("fill", "#05051a")
         } else {
             tooltipCircles.each(function (d, i) {
                 select(this)
@@ -236,9 +251,13 @@ const Chart = ({ data, formatPercentage, formatBytes }) => {
                     .text("")
             })
 
+            tooltip
+                .style("fill", "#ababab")
+
             tooltipText
                 .select("#text-0")
                 .text("No data")
+
         }
 
         tooltipHeight = tooltipText.node().getBoundingClientRect().height;

@@ -17,7 +17,6 @@
 
 .tooltip {
     stroke: none;
-    fill: black;
     fill-opacity: 0.6;
     border-radius: 10px;
     font-size: 10px;
@@ -27,6 +26,7 @@
     position: relative;
 }
 
-.tooltipText>* {
+.tooltipText {
+
     fill: white;
 }
