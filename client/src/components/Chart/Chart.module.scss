@@ -10,3 +10,23 @@
         font-size: 13px;
     }
 }
+
+.chart {
+    pointer-events: all;
+}
+
+.tooltip {
+    stroke: none;
+    fill: black;
+    fill-opacity: 0.6;
+    border-radius: 10px;
+    font-size: 10px;
+}
+
+.tooltipGroup {
+    position: relative;
+}
+
+.tooltipText>* {
+    fill: white;
+}

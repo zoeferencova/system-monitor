@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { select, scaleTime, scaleLinear, axisLeft, axisBottom, timeFormat, timeSecond, line, area, easeLinear, max } from 'd3';
+import { select, scaleTime, scaleLinear, axisLeft, axisBottom, timeFormat, timeSecond, line, area, easeLinear, pointer, bisector, selectAll, max } from 'd3';
 import SectionHeader from '../SectionHeader/SectionHeader';
 import styles from './Chart.module.scss'
 
@@ -11,23 +11,37 @@ const height = 250 - margin.top - margin.bottom
 const lineColors = ["#2F58F6", "#6CB477", "#9180FF"];
 const axisColor = "#7D8292"
 const gridColor = "#D9D9D9"
+const tooltipColor = "#404040"
 
-const Chart = ({ data }) => {
+const tooltipPaddingX = 15
+const tooltipPaddingY = 10
+
+let tooltipHeight = 0
+let tooltipWidth = 0
+
+const metricLabels = {
+    'cpuSys': 'System',
+    'cpuUser': 'User',
+    'cpuTotal': 'Total',
+    'memTotal': 'Used',
+    'batteryPercent': 'Charge'
+}
+
+const Chart = ({ data, formatPercentage, formatBytes }) => {
     const [selectedMetrics, setSelectedMetrics] = useState(['cpuSys', 'cpuUser', 'cpuTotal'])
+    const [mousePosition, setMousePosition] = useState(null)
 
     const d3svg = useRef(null)
 
     // scales
     const xValue = d => new Date(d.timestamp);
     const xScale = scaleTime()
-        .domain([timeSecond.offset(new Date(xValue(data[data.length - 1])), -300), new Date(xValue(data[data.length - 1]))])
+        .domain([timeSecond.offset(new Date(xValue(data[data.length - 1])), -50), new Date(xValue(data[data.length - 1]))])
         .range([0, width])
 
     const yScale = scaleLinear()
-        // .domain([0, max(data.map(d => max(d))) + 10])
         .domain([0, 100])
         .range([height, 0])
-
 
     const xAxis = axisBottom(xScale).ticks(5).tickFormat(timeFormat("%-I:%M%p")).tickSizeOuter(0)
     const yAxis = axisLeft(yScale).tickValues([0, 25, 50, 75, 100])
@@ -35,9 +49,12 @@ const Chart = ({ data }) => {
     const yAxisGrid = axisLeft(yScale).tickSize(-width).tickFormat("").tickValues([0, 25, 50, 75, 100])
 
     const createGraph = () => {
-        let svg = select(d3svg.current);
+        let svg = select(d3svg.current)
+            .attr("class", styles.chart)
 
         svg = svg.append('g')
+            .attr('class', styles.chartInner)
+            .attr('id', 'chart-inner')
             .attr('transform', `translate(${margin.left}, ${margin.top})`)
             .attr("width", width)
             .attr("height", height)
@@ -92,6 +109,35 @@ const Chart = ({ data }) => {
                 .attr("opacity", 0.1)
                 .attr("d", area().x(d => xScale(xValue(d))).y0(height).y1(d => yScale(d[metric])))
         })
+
+        const tooltipGroup = svg.append("g")
+            .attr("id", "tooltip-group")
+            .attr("class", styles.tooltipGroup)
+
+        tooltipGroup.append("line")
+            .attr("id", "tooltip-line")
+            .attr("y1", 0)
+            .attr("y2", height)
+            .attr("stroke", tooltipColor)
+
+        tooltipGroup.append("rect")
+            .attr("class", styles.tooltip)
+            .attr("id", "tooltip")
+            .attr("rx", 6)
+            .attr("ry", 6)
+
+        const tooltipText = tooltipGroup.append("g")
+            .attr("id", "tooltip-text")
+            .attr("class", styles.tooltipText)
+            .style("background", "blue")
+
+        selectedMetrics.forEach((metric, i) => {
+            tooltipGroup.append("circle")
+                .attr("class", "tooltip-circle")
+
+            tooltipText.append("text").attr("id", `text-${i}`)
+        })
+
     }
 
     const updateGraph = () => {
@@ -115,11 +161,101 @@ const Chart = ({ data }) => {
             .transition()
             .duration(1000)
             .ease(easeLinear)
-            .call(xAxis);
+            .call(xAxis)
+            .selectAll("text")
+            .attr("dy", "1em")
 
         yAxisGroup
             .call(yAxis)
     }
+
+    const updateTooltipPosition = function (event) {
+        setMousePosition(event)
+
+        const tooltip = select("#tooltip")
+        const tooltipLine = select("#tooltip-line")
+        const tooltipText = select("#tooltip-text")
+
+        const xPosition = event[0] + 10;
+        const yPosition = event[1] - (tooltipPaddingY + tooltipHeight / 2);
+
+        tooltip.attr("transform", `translate(${xPosition}, ${yPosition})`)
+        tooltipLine.attr("x1", event[0]).attr("x2", event[0])
+
+        tooltipText
+            .attr("transform", `translate(${xPosition + tooltipPaddingX}, ${yPosition + tooltipPaddingY + 11})`)
+    }
+
+    function setTooltipValues(mousePos) {
+        const tooltipCircles = selectAll(".tooltip-circle")
+        const tooltipText = select("#tooltip-text")
+        const tooltip = select("#tooltip")
+
+
+        const date = xScale.invert(mousePos[0])
+
+        const bisectDate = bisector(d => d.timestamp).left;
+        const i = bisectDate(data, date);
+
+        if (i > 0) {
+            const d0 = data[i - 1]
+            const d1 = data[i]
+            const nearestPoint = mousePos[0] - d0.timestamp > d1.timestamp - mousePos[0] ? d1 : d0;
+
+            const metricValues = []
+            selectedMetrics.forEach(metric => metricValues.push(nearestPoint[metric]))
+
+            tooltipCircles.each(function (d, i) {
+                select(this)
+                    .attr("visibility", "visible")
+                    .attr("cx", mousePos[0])
+                    .attr("cy", yScale(metricValues[i]))
+                    .attr("r", 3)
+                    .attr("fill", lineColors[i])
+                    .attr("fill-opacity", 0.9)
+            })
+
+            const metricsMap = metricValues.map((val, i) => ({ label: [metricLabels[selectedMetrics[i]]], value: val })).sort((a, b) => b.value - a.value)
+
+            metricsMap.map((obj, i) => {
+                tooltipText
+                    .select(`#text-${i}`)
+                    .attr('dy', `${i * 1.2}em`)
+                    .text(`${obj.label}: ${formatPercentage(obj.value)}`)
+                    .attr('color', 'black')
+            })
+        } else {
+            tooltipCircles.each(function (d, i) {
+                select(this)
+                    .attr("visibility", "hidden")
+            })
+
+            selectedMetrics.map((metric, i) => {
+                tooltipText
+                    .select(`#text-${i}`)
+                    .text("")
+            })
+
+            tooltipText
+                .select("#text-0")
+                .text("No data")
+        }
+
+        tooltipHeight = tooltipText.node().getBoundingClientRect().height;
+        tooltipWidth = tooltipText.node().getBoundingClientRect().width;
+
+        tooltip
+            .attr("width", tooltipWidth + tooltipPaddingX * 2)
+            .attr("height", tooltipHeight + tooltipPaddingY * 2)
+
+    }
+
+    select('#chart-inner')
+        .on('mousemove', function (event) {
+            select(this).style("cursor", "crosshair")
+            updateTooltipPosition(pointer(event))
+            setTooltipValues(pointer(event))
+        })
 
     useEffect(() => {
         createGraph()
@@ -127,7 +263,10 @@ const Chart = ({ data }) => {
 
     useEffect(() => {
         updateGraph()
+        mousePosition && setTooltipValues(mousePosition)
     }, [data])
+
+
 
     return (
         <div className={styles.container}>
@@ -138,6 +277,7 @@ const Chart = ({ data }) => {
                 role="img"
                 ref={d3svg}
             ></svg>
+            {/* <Tooltip /> */}
         </div>
 
     )
@@ -216,20 +356,20 @@ export default Chart;
 //         let svg = select(d3svg.current)
 
 //         // append group translated to chart area
-//         svg = svg.append('g').attr('transform', `translate(${margin.left}, ${margin.top})`).classed('chart-group', true).attr('width', width).attr('height', height)
+//         svg = svg.append('g').attr('transform', `translate(${ margin.left }, ${ margin.top })`).classed('chart-group', true).attr('width', width).attr('height', height)
 
 //         // draw axes
 
 //         svg
 //             .append('g')
 //             .attr('class', 'x-axis')
-//             .attr('transform', `translate(0,${height + margin.bottom / 3})`)
+//             .attr('transform', `translate(0, ${ height + margin.bottom / 3})`)
 //             .call(xAxis)
 
 //         svg
 //             .append('g')
 //             .attr('class', 'y-axis')
-//             .attr('transform', `translate(${-margin.left / 3},0)`)
+//             .attr('transform', `translate(${- margin.left / 3}, 0)`)
 //             .call(yAxis)
 //     }
 // }, [])

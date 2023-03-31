@@ -4,25 +4,9 @@ import Widget from '../Widget/Widget';
 import styles from './Widgets.module.scss';
 
 
-function Widgets({ currentPoint }) {
+function Widgets({ currentPoint, formatPercentage, formatBytes }) {
     const { cpuTotal, cpuSys, cpuUser, memFree, memUsed, battCycles, battCharging, battPercent, battRemaining } = currentPoint;
     const memTotal = (memUsed / (memFree + memUsed)) * 100;
-
-    const formatBytes = (bytes, decimals = 2) => {
-        if (!+bytes) return '0 Bytes'
-
-        const k = 1024
-        const dm = decimals < 0 ? 0 : decimals
-        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
-
-        const i = Math.floor(Math.log(bytes) / Math.log(k))
-
-        return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
-    }
-
-    const formatPercentage = (percentage, decimals = 1) => {
-        return percentage.toFixed(decimals) + '%'
-    }
 
     return (
         <div className={styles.widgets}>
