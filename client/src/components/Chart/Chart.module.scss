@@ -3,8 +3,7 @@
 .container {
     @include var.widget-box;
     margin-top: 40px;
-
-    padding: 30px;
+    padding: 30px 30px 80px 30px;
 
     text {
         font-size: 13px;
@@ -27,6 +26,17 @@
 }
 
 .tooltipText {
-
     fill: white;
+}
+
+.timeTooltip {
+    fill: #e9e9e9;
+}
+
+.timeTooltipText {
+    text {
+        fill: #7d8292;
+        font-weight: 500;
+        font-size: 12px;
+    }
 }
