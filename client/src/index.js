@@ -6,17 +6,14 @@ import { createClient } from 'graphql-ws';
 import { split, HttpLink } from '@apollo/client';
 import { getMainDefinition } from '@apollo/client/utilities';
 import App from './App/App';
-import * as dotenv from 'dotenv';
-dotenv.config()
-
 import './styles/index.scss';
 
 const httpLink = new HttpLink({
-  uri: `https://${process.env.SERVER_URL}/graphql`
+  uri: `https://${process.env.REACT_APP_API_ENDPOINT}/graphql`
 });
 
 const wsLink = new GraphQLWsLink(createClient({
-  url: `ws://${process.env.SERVER_URL}/graphql`,
+  url: `ws://${process.env.REACT_APP_API_ENDPOINT}/graphql`,
   options: {
     reconnect: true
   }

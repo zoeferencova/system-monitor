@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { select, scaleTime, scaleLinear, axisLeft, axisBottom, timeFormat, timeSecond, line, area, easeLinear, pointer, bisector, selectAll, max } from 'd3';
+import { select, scaleTime, scaleLinear, axisLeft, axisBottom, timeFormat, timeSecond, line, area, easeLinear, pointer, bisector, selectAll } from 'd3';
 import SectionHeader from '../SectionHeader/SectionHeader';
 import ChartLegend from '../ChartLegend/ChartLegend';
 import styles from './Chart.module.scss';
@@ -323,7 +323,7 @@ const Chart = ({ data, formatPercentage }) => {
 
             // add metric label and value to each tooltipText text element
             metricsMap.map((obj, i) => {
-                tooltipText
+                return tooltipText
                     .select(`#text-${i}`)
                     .attr('dy', `${i * 1.2}em`)
                     .text(`${obj.label}: ${formatPercentage(obj.value)}`)
@@ -343,7 +343,7 @@ const Chart = ({ data, formatPercentage }) => {
 
             // remove tooltip text
             selectedMetrics.map((metric, i) => {
-                tooltipText
+                return tooltipText
                     .select(`#text-${i}`)
                     .text("")
             })
