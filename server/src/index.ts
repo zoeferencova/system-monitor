@@ -5,12 +5,10 @@ import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHt
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { WebSocketServer } from 'ws';
 import { useServer } from 'graphql-ws/lib/use/ws';
-import { PubSub } from 'graphql-subscriptions';
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import si from 'systeminformation';
-import * as dotenv from 'dotenv';
 import { v1 as uuidv1 } from 'uuid';
 
 const typeDefs = `#graphql
