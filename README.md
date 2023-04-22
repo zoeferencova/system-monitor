@@ -18,12 +18,14 @@ Track CPU usage, memory, and battery information on your machine in realtime. Da
 The app demo at the above link currently shows data from the remote server on which the app is stored. In order to view data from your local machine (and see the Battery section function properly), follow the below instructions:
 
 1. Clone repo onto your local machine
-2. Navigate to client/src/index.js file
-3. Uncomment localhost URI's on lines 13 and 18
-4. Comment out the URI's with remote endpoint on lines 12 and 17
-5. Run `npm start` while inside the client directory
-6. Open a new terminal, navigate to the server directory, and run `npm run dev`
-7. Make sure that the port that the server is running on is the same as the port listed in the index.js file in step 3 above
+2. Navigate to client folder and run `npm install`
+3. Navigate to server folder and run `npm install`
+4. Navigate to client/src/index.js file
+5. Uncomment localhost URI's on lines 13 and 18
+6. Comment out the URI's with remote endpoint on lines 12 and 17
+7. Run `npm start` while inside the client directory
+8. Open a new terminal, navigate to the server directory, and run `npm run dev`
+9. Make sure that the port that the server is running on is the same as the port listed in the index.js file in step 3 above
 
 ## To-do
 
