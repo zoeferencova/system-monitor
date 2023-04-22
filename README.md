@@ -13,7 +13,7 @@ Track CPU usage, memory, and battery information on your machine in realtime. Da
 * D3 for chart
 * Apollo Client + Apollo Server
 
-## Using App Locally
+## Use App Locally
 
 The app demo at the above link currently shows data from the remote server on which the app is stored. In order to view data from your local machine (and see the Battery section function properly), follow the below instructions:
 
