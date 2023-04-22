@@ -24,7 +24,7 @@ The app demo at the above link currently shows data from the remote server on wh
 5. Uncomment localhost URI's on lines 13 and 18
 6. Comment out the URI's with remote endpoint on lines 12 and 17
 7. Run `npm start` while inside the client directory
-8. Open a new terminal, navigate to the server directory, and run `npm run dev`
+8. Open a new terminal, navigate to the server directory, and run `npm start`
 9. Make sure that the port that the server is running on is the same as the port listed in the index.js file in step 3 above
 
 ## To-do
