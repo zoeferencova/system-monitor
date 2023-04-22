@@ -10,10 +10,12 @@ import './styles/index.scss';
 
 const httpLink = new HttpLink({
   uri: `https://${process.env.REACT_APP_API_ENDPOINT}/graphql`
+  // uri: `http://localhost:4000/graphql`
 });
 
 const wsLink = new GraphQLWsLink(createClient({
   url: `ws://${process.env.REACT_APP_API_ENDPOINT}/graphql`,
+  // url: `ws://localhost:4000/graphql`,
   options: {
     reconnect: true
   }
