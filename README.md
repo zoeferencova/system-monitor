@@ -29,6 +29,7 @@ The app demo at the above link currently shows data from the remote server on wh
 
 ## To-do
 
+- [ ] Update Chart component to use more traditional enter, update, exit pattern
 - [ ] Add tests (learn how to test charts showing realtime data)
 - [ ] Improve latency when connecting to remote server (updates do not always occur every second)
 - [ ] Add dropdown for selecting different stats to display on the chart
