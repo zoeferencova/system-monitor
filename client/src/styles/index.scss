@@ -135,9 +135,26 @@ table {
   box-sizing: border-box;
 }
 
+@font-face {
+  font-family: "SF Display";
+  src: url("../fonts/SFPRODISPLAYREGULAR.OTF") format("opentype");
+}
+
+@font-face {
+  font-family: "SF Display";
+  font-weight: 500;
+  src: url("../fonts/SFPRODISPLAYMEDIUM.OTF") format("opentype");
+}
+
+@font-face {
+  font-family: "SF Display";
+  font-weight: 700;
+  src: url("../fonts/SFPRODISPLAYBOLD.OTF") format("opentype");
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  font-family: 'SF Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
