@@ -400,11 +400,7 @@ const Chart = ({ data, formatPercentage }) => {
                 ></svg>
             </div>
             <ChartLegend selectedMetrics={selectedMetrics} metricLabels={metricLabels} lineColors={lineColors} />
-
         </>
-
-
-
     )
 }
 
